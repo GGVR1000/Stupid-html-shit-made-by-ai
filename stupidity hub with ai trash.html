@@ -2,107 +2,135 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Stupid AI Trash Hub</title>
+    <title>ULTIMATE BRAIN ROT HUB</title>
     <style>
         body {
             margin: 0; background: #000055; color: #ffff00;
             font-family: "Comic Sans MS", "Comic Sans", cursive;
             display: flex; flex-direction: column; align-items: center;
-            height: 100vh; overflow: hidden; perspective: 1200px;
+            height: 100vh; overflow: hidden;
         }
 
-        h1 { font-size: 50px; color: #ff0000; animation: jitter 0.1s infinite; }
-        @keyframes jitter { 0% { transform: translate(2px, 2px); } 50% { transform: translate(-2px, -2px); } }
+        h1 { font-size: 50px; color: #ff0000; animation: jitter 0.05s infinite; }
+        @keyframes jitter { 0% { transform: translate(3px, 3px); } 50% { transform: translate(-3px, -3px); } }
 
-        /* VIBRATING BUTTON */
+        /* THE VIBRATING BAIT */
         #robux-btn {
-            position: fixed; bottom: 0; width: 100%; height: 120px;
-            background: #ff0000; color: white; font-size: 40px; font-weight: 900;
-            border: 10px solid yellow; cursor: pointer; z-index: 9999;
-            animation: vibrate 0.05s infinite;
+            position: fixed; bottom: 0; width: 100%; height: 150px;
+            background: #ff0000; color: white; font-size: 50px; font-weight: 900;
+            border: 15px solid yellow; cursor: pointer; z-index: 9999;
+            animation: aggressive-vibrate 0.02s infinite;
         }
-        @keyframes vibrate {
-            0% { transform: translate(0,0); } 25% { transform: translate(8px,8px); }
-            50% { transform: translate(-8px,8px); } 100% { transform: translate(-8px,-8px); }
+        @keyframes aggressive-vibrate {
+            0% { transform: translate(0,0); } 
+            25% { transform: translate(15px, 15px); }
+            50% { transform: translate(-15px, 15px); }
+            75% { transform: translate(15px, -15px); }
+            100% { transform: translate(-15px, -15px); }
         }
 
-        /* VIRUS OVERLAY */
-        #virus-overlay {
+        #glitch-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 0, 0, 0.5); display: none; z-index: 10000;
-            pointer-events: none; overflow: hidden;
+            background: rgba(255, 0, 0, 0.4); display: none; z-index: 10000;
+            pointer-events: none;
         }
 
-        .spam { position: absolute; font-size: 80px; animation: rainbow 0.1s infinite; }
-        @keyframes rainbow { 0% { color: red; } 50% { color: lime; } 100% { color: blue; } }
+        .virus-text {
+            position: absolute; font-size: 120px; font-weight: bold;
+            animation: strobe 0.1s infinite;
+        }
+        @keyframes strobe {
+            0% { color: red; transform: scale(1.5) rotate(15deg); }
+            50% { color: #0f0; transform: scale(0.5) rotate(-15deg); }
+            100% { color: blue; transform: scale(2) rotate(0deg); }
+        }
 
-        /* FAKE BSOD */
         #bsod {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #0000aa; color: white; display: none;
-            z-index: 11000; padding: 50px; font-family: monospace;
+            z-index: 11000; padding: 100px; font-family: monospace;
+            font-size: 24px;
         }
     </style>
 </head>
 <body>
 
     <h1>🎮 TRASH HUB 🎮</h1>
-    <marquee>⚠️ BRAIN ROT LEVEL: CRITICAL ⚠️ DONT PRESS IT ⚠️</marquee>
+    <marquee scrollamount="30">🤑 FREE ROBUX BELOW 🤑 FREE ROBUX BELOW 🤑 FREE ROBUX BELOW 🤑</marquee>
 
-    <button id="robux-btn" onclick="startChaos()">🤑 CLICK FOR FREE ROBUX 🤑</button>
+    <button id="robux-btn" onclick="goInsane()">🤑 CLICK FOR FREE ROBUX 🤑</button>
 
-    <div id="virus-overlay"></div>
+    <div id="glitch-overlay"></div>
 
     <div id="bsod">
         <h1>:(</h1>
-        <p>Your PC ran into a problem because you wanted free Robux.</p>
-        <p>Error Code: STUPID_USER_EXCESSIVE_BRAIN_ROT</p>
-        <p>Complete: 100%</p>
-        <p>Restarting... (Just kidding, refresh the page to escape)</p>
+        <p>Your browser has encountered a fatal Error 0x8008135.</p>
+        <p>Reason: STUPIDITY_OVERLOAD</p>
+        <p>Your tab is now haunted by AI trash.</p>
+        <br>
+        <p>Deleting System32... (Not really, just close the tab)</p>
     </div>
 
     <script>
-        function startChaos() {
-            // 1. Request Fullscreen
-            const docElm = document.documentElement;
-            if (docElm.requestFullscreen) docElm.requestFullscreen();
+        function goInsane() {
+            // FULLSCREEN TRIGGER
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            }
 
-            const overlay = document.getElementById('virus-overlay');
-            overlay.style.display = 'block';
+            document.getElementById('glitch-overlay').style.display = 'block';
 
-            // 2. Annoying "Saliwine" Style Audio (Discordant Sawtooths)
+            // HARSH DISCORDANT AUDIO
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Layer 1: The High Pitched Sawtooth
             setInterval(() => {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(Math.random() * 4000 + 100, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(Math.random() * 5000 + 500, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
                 osc.start();
-                osc.stop(audioCtx.currentTime + 0.05);
-            }, 80);
-
-            // 3. Spawn "VIRUS" and "LMAO" text
-            setInterval(() => {
-                const div = document.createElement('div');
-                div.className = 'spam';
-                div.innerText = Math.random() > 0.5 ? 'VIRUS' : 'LMAO';
-                div.style.left = Math.random() * 90 + 'vw';
-                div.style.top = Math.random() * 90 + 'vh';
-                overlay.appendChild(div);
-            }, 40);
-
-            // 4. Glitch Filter
-            setInterval(() => {
-                document.body.style.filter = `invert(${Math.random() > 0.7 ? 1 : 0}) hue-rotate(${Math.random() * 360}deg)`;
+                osc.stop(audioCtx.currentTime + 0.03);
             }, 50);
 
-            // 5. The "Tab Crash" (Fake BSOD) after 30 seconds
+            // Layer 2: The Deep Grumbly Square Wave
+            setInterval(() => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(Math.random() * 100 + 40, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            }, 150);
+
+            // SPAM VIRUS TEXT
+            setInterval(() => {
+                const div = document.createElement('div');
+                div.className = 'virus-text';
+                div.innerText = Math.random() > 0.5 ? 'VIRUS' : 'REKT';
+                div.style.left = Math.random() * 80 + 'vw';
+                div.style.top = Math.random() * 80 + 'vh';
+                document.getElementById('glitch-overlay').appendChild(div);
+            }, 30);
+
+            // SCREEN MELTDOWN
+            setInterval(() => {
+                document.body.style.filter = `invert(${Math.random() > 0.5 ? 1 : 0}) hue-rotate(${Math.random() * 360}deg)`;
+                window.scrollBy(Math.random() * 50 - 25, Math.random() * 50 - 25);
+            }, 20);
+
+            // THE TAB "CRASH" (30 Seconds)
             setTimeout(() => {
                 document.getElementById('bsod').style.display = 'block';
-                // Stop the audio after the "crash"
                 audioCtx.close();
             }, 30000);
         }
