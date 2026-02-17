@@ -2,159 +2,150 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SURVIVAL 2D: TURBO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stupid AI Game Hub 3000</title>
     <style>
-        body { margin: 0; background: #1a1a1a; color: #fff; font-family: 'Courier New', Courier, monospace; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        canvas { background: #2d3436; border: 4px solid #636e72; box-shadow: 0 0 20px rgba(0,0,0,0.5); cursor: crosshair; }
-        #ui { position: absolute; top: 20px; left: 20px; pointer-events: none; }
-        .stat { font-size: 20px; font-weight: bold; text-shadow: 2px 2px #000; }
-        #msg { position: absolute; top: 50%; width: 100%; text-align: center; font-size: 50px; color: #fab1a0; display: none; }
+        body {
+            margin: 0;
+            background: #000055;
+            color: #ffff00;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            perspective: 1200px;
+        }
+        h1 {
+            font-size: 60px;
+            color: #ff0000;
+            text-shadow: 4px 4px 0px #ffffff;
+            margin-top: 30px;
+            animation: jitter 0.1s infinite;
+        }
+        @keyframes jitter {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            50% { transform: translate(-1px, -2px) rotate(1deg); }
+            100% { transform: translate(1px, 1px) rotate(0deg); }
+        }
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black;
+            color: lime;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            font-size: 30px;
+        }
+        .scene {
+            width: 400px;
+            height: 400px;
+            margin-top: 50px;
+            transform-style: preserve-3d;
+            animation: spin 10s infinite linear;
+            display: none;
+        }
+        @keyframes spin {
+            from { transform: rotateY(0deg) rotateX(20deg); }
+            to { transform: rotateY(360deg) rotateX(20deg); }
+        }
+        .menu-item {
+            position: absolute;
+            width: 280px;
+            height: 120px;
+            background: rgba(0, 255, 0, 0.8);
+            border: 10px outset #00ff00;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            backface-visibility: visible;
+            transition: 0.5s;
+        }
+        .menu-item:hover {
+            background: #ff00ff;
+            color: white;
+            border-color: #ffffff;
+            transform: scale(1.1);
+        }
+        #card1 { transform: rotateY(0deg) translateZ(250px); }
+        #card2 { transform: rotateY(120deg) translateZ(250px); }
+        #card3 { transform: rotateY(240deg) translateZ(250px); }
+        #game-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black;
+            display: none;
+            z-index: 1000;
+        }
+        iframe { width: 100%; height: 100%; border: none; }
+        .close-btn {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: red; color: white;
+            padding: 15px; font-weight: bold;
+            cursor: pointer; border: 4px solid white;
+        }
     </style>
 </head>
 <body>
-
-    <div id="ui">
-        <div class="stat">HEALTH: <span id="hp">100</span></div>
-        <div class="stat">KILLS: <span id="kills">0</span></div>
-        <div class="stat" style="color: #74b9ff;">ZONE RADIUS: <span id="zone">100%</span></div>
+    <div id="loader">
+        <p>INITIALIZING STUPIDITY...</p>
+        <p id="percent">0%</p>
+        <div style="width:300px; height:20px; border:2px solid lime;">
+            <div id="bar" style="width:0%; height:100%; background:lime;"></div>
+        </div>
     </div>
-    <div id="msg">WINNER WINNER CHICKEN DINNER!</div>
-
-    <canvas id="game"></canvas>
-
-<script>
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
-const hpEl = document.getElementById('hp');
-const killsEl = document.getElementById('kills');
-const zoneEl = document.getElementById('zone');
-const msg = document.getElementById('msg');
-
-canvas.width = 800;
-canvas.height = 600;
-
-let player = { x: 400, y: 300, r: 15, color: '#00cec9', hp: 100, speed: 5, kills: 0 };
-let bullets = [];
-let enemies = [];
-let crates = [];
-let zoneRadius = 800;
-let keys = {};
-let mouse = { x: 0, y: 0 };
-
-// Controls
-window.addEventListener('keydown', e => keys[e.code] = true);
-window.addEventListener('keyup', e => keys[e.code] = false);
-window.addEventListener('mousemove', e => {
-    const rect = canvas.getBoundingClientRect();
-    mouse.x = e.clientX - rect.left;
-    mouse.y = e.clientY - rect.top;
-});
-window.addEventListener('mousedown', shoot);
-
-function shoot() {
-    const angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
-    bullets.push({ x: player.x, y: player.y, vx: Math.cos(angle) * 12, vy: Math.sin(angle) * 12, owner: 'player' });
-}
-
-function spawnEnemy() {
-    if (enemies.length < 10) {
-        enemies.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            r: 15,
-            hp: 30,
-            color: '#d63031'
-        });
-    }
-}
-
-function update() {
-    // Player Move
-    if (keys['KeyW']) player.y -= player.speed;
-    if (keys['KeyS']) player.y += player.speed;
-    if (keys['KeyA']) player.x -= player.speed;
-    if (keys['KeyD']) player.x += player.speed;
-
-    // Zone Shrink
-    zoneRadius -= 0.2;
-    zoneEl.innerText = Math.max(0, Math.floor((zoneRadius / 800) * 100)) + "%";
-    
-    // Zone Damage
-    const distToCenter = Math.hypot(player.x - 400, player.y - 300);
-    if (distToCenter > zoneRadius) player.hp -= 0.1;
-
-    // Update Bullets
-    bullets.forEach((b, i) => {
-        b.x += b.vx; b.y += b.vy;
-        if (b.x < 0 || b.x > canvas.width || b.y < 0 || b.y > canvas.height) bullets.splice(i, 1);
-    });
-
-    // Update Enemies
-    enemies.forEach((en, i) => {
-        const angle = Math.atan2(player.y - en.y, player.x - en.x);
-        en.x += Math.cos(angle) * 2;
-        en.y += Math.sin(angle) * 2;
-
-        // Collision with player bullets
-        bullets.forEach((b, bi) => {
-            if (b.owner === 'player' && Math.hypot(en.x - b.x, en.y - b.y) < en.r) {
-                en.hp -= 10;
-                bullets.splice(bi, 1);
-                if (en.hp <= 0) {
-                    enemies.splice(i, 1);
-                    player.kills++;
-                    killsEl.innerText = player.kills;
-                }
+    <h1>🎮 TRASH HUB 🎮</h1>
+    <marquee scrollamount="20">⚠️ WARNING: HIGH LEVELS OF BRAIN ROT DETECTED -- PLAY AT YOUR OWN RISK ⚠️</marquee>
+    <div class="scene" id="main-menu">
+        <div class="menu-item" id="card1" onclick="openGame('bloxorz-knockoff-made-by-ai.html')">
+            <h2 style="margin:0">BLOXORZ</h2>
+            <p>Rectangle Rolling Sim</p>
+        </div>
+        <div class="menu-item" id="card2" onclick="openGame('pubg-on-crack-made-by-ai.html')">
+            <h2 style="margin:0">PUBG ON CRACK</h2>
+            <p>Totally Balanced Gameplay</p>
+        </div>
+        <div class="menu-item" id="card3" onclick="alert('ERROR: Your mouse is too high quality to exit.')">
+            <h2 style="margin:0">EXIT</h2>
+            <p>Prison is Forever</p>
+        </div>
+    </div>
+    <div id="game-overlay">
+        <div class="close-btn" onclick="closeGame()">GO BACK TO THE TRASH</div>
+        <iframe id="game-frame" src=""></iframe>
+    </div>
+    <script>
+        const repoUrl = "https://raw.githack.com/GGVR1000/Stupid-html-shit-made-by-ai/main/";
+        let progress = 0;
+        const loader = document.getElementById('loader');
+        const bar = document.getElementById('bar');
+        const percent = document.getElementById('percent');
+        const menu = document.getElementById('main-menu');
+        const loadInterval = setInterval(() => {
+            progress += 1;
+            bar.style.width = progress + "%";
+            percent.innerText = progress + "%";
+            if (progress >= 100) {
+                clearInterval(loadInterval);
+                loader.style.display = 'none';
+                menu.style.display = 'block';
             }
-        });
-
-        // Damage Player
-        if (Math.hypot(en.x - player.x, en.y - player.y) < player.r + en.r) {
-            player.hp -= 0.5;
+        }, 100);
+        function openGame(file) {
+            document.getElementById('game-frame').src = repoUrl + file;
+            document.getElementById('game-overlay').style.display = 'block';
         }
-    });
-
-    hpEl.innerText = Math.ceil(player.hp);
-    if (player.hp <= 0) location.reload();
-    if (player.kills >= 20) msg.style.display = 'block';
-}
-
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw Zone
-    ctx.beginPath();
-    ctx.arc(400, 300, zoneRadius, 0, Math.PI * 2);
-    ctx.strokeStyle = '#0984e3';
-    ctx.lineWidth = 5;
-    ctx.stroke();
-
-    // Draw Player
-    ctx.fillStyle = player.color;
-    ctx.beginPath();
-    ctx.arc(player.x, player.y, player.r, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Draw Enemies
-    enemies.forEach(en => {
-        ctx.fillStyle = en.color;
-        ctx.beginPath();
-        ctx.arc(en.x, en.y, en.r, 0, Math.PI * 2);
-        ctx.fill();
-    });
-
-    // Draw Bullets
-    ctx.fillStyle = '#f1c40f';
-    bullets.forEach(b => ctx.fillRect(b.x, b.y, 4, 4));
-
-    requestAnimationFrame(() => {
-        update();
-        draw();
-    });
-}
-
-setInterval(spawnEnemy, 2000);
-draw();
-</script>
+        function closeGame() {
+            document.getElementById('game-overlay').style.display = 'none';
+            document.getElementById('game-frame').src = "";
+        }
+    </script>
 </body>
 </html>
