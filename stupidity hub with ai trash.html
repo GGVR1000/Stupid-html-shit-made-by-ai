@@ -17,6 +17,8 @@
             overflow: hidden;
             perspective: 1200px;
         }
+
+        /* Jittery Title */
         h1 {
             font-size: 60px;
             color: #ff0000;
@@ -24,35 +26,27 @@
             margin-top: 30px;
             animation: jitter 0.1s infinite;
         }
+
         @keyframes jitter {
             0% { transform: translate(1px, 1px) rotate(0deg); }
             50% { transform: translate(-1px, -2px) rotate(1deg); }
             100% { transform: translate(1px, 1px) rotate(0deg); }
         }
-        #loader {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: black;
-            color: lime;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            font-size: 30px;
-        }
+
+        /* 3D Menu Scene */
         .scene {
             width: 400px;
             height: 400px;
             margin-top: 50px;
             transform-style: preserve-3d;
             animation: spin 10s infinite linear;
-            display: none;
         }
+
         @keyframes spin {
             from { transform: rotateY(0deg) rotateX(20deg); }
             to { transform: rotateY(360deg) rotateX(20deg); }
         }
+
         .menu-item {
             position: absolute;
             width: 280px;
@@ -65,158 +59,126 @@
             align-items: center;
             cursor: pointer;
             backface-visibility: visible;
-            transition: 0.5s;
         }
-        .menu-item:hover {
-            background: #ff00ff;
-            color: white;
-            border-color: #ffffff;
-            transform: scale(1.1);
-        }
+
         #card1 { transform: rotateY(0deg) translateZ(250px); }
         #card2 { transform: rotateY(120deg) translateZ(250px); }
         #card3 { transform: rotateY(240deg) translateZ(250px); }
-        
-        #game-container {
+
+        /* THE VIRUS PRANK BUTTON */
+        #virus-btn {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 50px;
+            background: red;
+            color: white;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            z-index: 2000;
+        }
+
+        /* THE GLITCH OVERLAY (Hidden by default) */
+        #glitch-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 0, 0, 0.3);
+            display: none;
+            z-index: 3000;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .virus-text {
+            position: absolute;
+            font-size: 100px;
+            font-weight: bold;
+            animation: flash 0.1s infinite;
+        }
+
+        @keyframes flash {
+            0% { color: red; transform: scale(1); }
+            50% { color: lime; transform: scale(1.5) rotate(10deg); }
+            100% { color: blue; transform: scale(1); }
+        }
+
+        #game-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: black;
             display: none;
             z-index: 1000;
         }
-        .close-btn {
-            position: absolute;
-            top: 10px; right: 10px;
-            background: red; color: white;
-            padding: 15px; font-weight: bold;
-            cursor: pointer; border: 4px solid white;
-            z-index: 1001;
-        }
-        iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <p>INITIALIZING STUPIDITY...</p>
-        <p id="percent">0%</p>
-        <div style="width:300px; height:20px; border:2px solid lime;">
-            <div id="bar" style="width:0%; height:100%; background:lime;"></div>
-        </div>
-    </div>
-
     <h1>🎮 TRASH HUB 🎮</h1>
     <marquee scrollamount="20">⚠️ WARNING: HIGH LEVELS OF BRAIN ROT DETECTED -- PLAY AT YOUR OWN RISK ⚠️</marquee>
 
-    <div class="scene" id="main-menu">
-        <div class="menu-item" id="card1" onclick="launchGame('bloxorz')">
-            <h2 style="margin:0">BLOXORZ</h2>
-            <p>Rectangle Rolling Sim</p>
+    <div class="scene">
+        <div class="menu-item" id="card1" onclick="openGame('bloxorz-knockoff-made-by-ai.html')">
+            <h2>BLOXORZ</h2>
+            <p>Rectangle Physics</p>
         </div>
-        <div class="menu-item" id="card2" onclick="launchGame('pubg')">
-            <h2 style="margin:0">PUBG ON CRACK</h2>
-            <p>100% Chaos Guaranteed</p>
+        <div class="menu-item" id="card2" onclick="openGame('pubg-on-crack-made-by-ai.html')">
+            <h2>PUBG ON CRACK</h2>
+            <p>Absolute Chaos</p>
         </div>
-        <div class="menu-item" id="card3" onclick="alert('ERROR: Your mouse is too high quality to exit.')">
-            <h2 style="margin:0">EXIT</h2>
-            <p>Prison is Forever</p>
+        <div class="menu-item" id="card3" onclick="alert('EXIT DENIED')">
+            <h2>EXIT</h2>
+            <p>No Escape</p>
         </div>
     </div>
 
-    <div id="game-container">
-        <div class="close-btn" onclick="closeGame()">GO BACK TO THE TRASH</div>
+    <button id="virus-btn" onclick="triggerVirus()">DO NOT CLICK THIS BUTTON</button>
+
+    <div id="glitch-screen"></div>
+
+    <div id="game-overlay">
         <iframe id="game-frame"></iframe>
     </div>
 
     <script>
-        // FAKE LOADER LOGIC
-        let progress = 0;
-        const loadInterval = setInterval(() => {
-            progress += 1;
-            document.getElementById('bar').style.width = progress + "%";
-            document.getElementById('percent').innerText = progress + "%";
-            if (progress >= 100) {
-                clearInterval(loadInterval);
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('main-menu').style.display = 'block';
-            }
-        }, 50);
+        const repoUrl = "https://raw.githack.com/GGVR1000/Stupid-html-shit-made-by-ai/main/";
 
-        // FULL GAME CODE STRINGS (NO EXTERNAL LINKS)
-        const games = {
-            bloxorz: `
-                <html><body style="background:#111;color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;">
-                <h2>STUPID BLOXORZ</h2>
-                <canvas id="g" width="600" height="400" style="background:#222;border:2px solid #444;"></canvas>
-                <script>
-                    const c=document.getElementById("g").getContext("2d");
-                    let b={x:0,y:0,s:"standing"};
-                    const m=[[1,1,1,0,0,0],[1,1,1,1,1,0],[1,1,1,1,1,1],[0,1,1,2,1,1],[0,0,1,1,1,0]];
-                    function d(){
-                        c.clearRect(0,0,600,400);
-                        for(let r=0;r<m.length;r++)for(let l=0;l<m[r].length;l++){
-                            if(m[r][l]==0)continue;
-                            c.fillStyle=m[r][l]==1?"#444":m[r][l]==2?"#000":"#444";
-                            c.fillRect(200+l*40,150+r*40,38,38);
-                        }
-                        c.fillStyle="#ff9f43";
-                        let x=200+b.x*40,y=150+b.y*40;
-                        if(b.s=="standing")c.fillRect(x+4,y+4,32,32);
-                        else if(b.s=="horiz")c.fillRect(x+4,y+4,72,32);
-                        else c.fillRect(x+4,y+4,32,72);
-                    }
-                    window.onkeydown=e=>{
-                        if(e.key=="ArrowUp"){if(b.s=="standing"){b.y-=2;b.s="vert"}else if(b.s=="vert"){b.y-=1;b.s="standing"}else b.y-=1}
-                        if(e.key=="ArrowDown"){if(b.s=="standing"){b.y+=1;b.s="vert"}else if(b.s=="vert"){b.y+=2;b.s="standing"}else b.y+=1}
-                        if(e.key=="ArrowLeft"){if(b.s=="standing"){b.x-=2;b.s="horiz"}else if(b.s=="horiz"){b.x-=1;b.s="standing"}else b.x-=1}
-                        if(e.key=="ArrowRight"){if(b.s=="standing"){b.x+=1;b.s="horiz"}else if(b.s=="horiz"){b.x+=2;b.s="standing"}else b.x+=1}
-                        d();
-                    };
-                    d();
-                <\/script></body></html>`,
-            
-            pubg: `
-                <html><body style="margin:0;background:#1a1a1a;color:white;overflow:hidden;font-family:monospace;display:flex;justify-content:center;align-items:center;height:100vh;">
-                <canvas id="g" width="800" height="600" style="background:#2d3436;border:2px solid #636e72;"></canvas>
-                <script>
-                    const c=document.getElementById("g").getContext("2d");
-                    let p={x:400,y:300},en=[],bul=[];
-                    window.onclick=e=>{
-                        const a=Math.atan2(e.clientY-p.y,e.clientX-p.x);
-                        bul.push({x:p.x,y:p.y,vx:Math.cos(a)*10,vy:Math.sin(a)*10});
-                    };
-                    function s(){if(en.length<10)en.push({x:Math.random()*800,y:Math.random()*600})}
-                    function draw(){
-                        c.clearRect(0,0,800,600);
-                        c.fillStyle="cyan";c.beginPath();c.arc(p.x,p.y,15,0,7);c.fill();
-                        c.fillStyle="red";en.forEach(e=>{
-                            e.x+=(p.x-e.x)*0.02;e.y+=(p.y-e.y)*0.02;
-                            c.beginPath();c.arc(e.x,e.y,15,0,7);c.fill();
-                        });
-                        c.fillStyle="yellow";bul.forEach((b,i)=>{
-                            b.x+=b.vx;b.y+=b.vy;
-                            c.fillRect(b.x,b.y,5,5);
-                            en.forEach((e,ei)=>{if(Math.hypot(e.x-b.x,e.y-b.y)<15)en.splice(ei,1)});
-                        });
-                        requestAnimationFrame(draw);
-                    }
-                    setInterval(s,1000);draw();
-                <\/script></body></html>`
-        };
-
-        function launchGame(id) {
-            const frame = document.getElementById('game-frame');
-            document.getElementById('game-container').style.display = 'block';
-            
-            const doc = frame.contentWindow.document;
-            doc.open();
-            doc.write(games[id]);
-            doc.close();
+        function openGame(file) {
+            document.getElementById('game-frame').src = repoUrl + file;
+            document.getElementById('game-overlay').style.display = 'block';
         }
 
-        function closeGame() {
-            document.getElementById('game-container').style.display = 'none';
-            document.getElementById('game-frame').src = "about:blank";
+        // FAKE VIRUS LOGIC
+        function triggerVirus() {
+            const glitch = document.getElementById('glitch-screen');
+            glitch.style.display = 'block';
+
+            // 1. Play Annoying Sound (Simple Beeps)
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            setInterval(() => {
+                const osc = audioCtx.createOscillator();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(Math.random() * 1000 + 200, audioCtx.currentTime);
+                osc.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            }, 150);
+
+            // 2. Spam Glitch Text
+            setInterval(() => {
+                const t = document.createElement('div');
+                t.className = 'virus-text';
+                t.innerText = 'VIRUS';
+                t.style.left = Math.random() * 100 + 'vw';
+                t.style.top = Math.random() * 100 + 'vh';
+                glitch.appendChild(t);
+            }, 100);
+
+            // 3. Visual Glitch Shaking
+            setInterval(() => {
+                document.body.style.transform = `translate(${Math.random()*20-10}px, ${Math.random()*20-10}px)`;
+                document.body.style.filter = `hue-rotate(${Math.random()*360}deg) invert(${Math.random()>0.8?1:0})`;
+            }, 50);
         }
     </script>
 </body>
