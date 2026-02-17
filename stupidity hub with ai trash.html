@@ -18,7 +18,6 @@
             perspective: 1200px;
         }
 
-        /* Jittery Title */
         h1 {
             font-size: 60px;
             color: #ff0000;
@@ -33,7 +32,6 @@
             100% { transform: translate(1px, 1px) rotate(0deg); }
         }
 
-        /* 3D Menu Scene */
         .scene {
             width: 400px;
             height: 400px;
@@ -65,120 +63,114 @@
         #card2 { transform: rotateY(120deg) translateZ(250px); }
         #card3 { transform: rotateY(240deg) translateZ(250px); }
 
-        /* THE VIRUS PRANK BUTTON */
+        /* GIANT RED VIRUS BUTTON */
         #virus-btn {
             position: fixed;
             bottom: 0;
+            left: 0;
             width: 100%;
-            height: 50px;
+            height: 80px;
             background: red;
             color: white;
+            font-size: 30px;
             font-weight: bold;
-            border: none;
+            border: 5px solid white;
             cursor: pointer;
-            z-index: 2000;
+            z-index: 5000;
+            animation: vibrate 0.05s infinite;
         }
 
-        /* THE GLITCH OVERLAY (Hidden by default) */
-        #glitch-screen {
+        @keyframes vibrate {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(5px); }
+            100% { transform: translateX(-5px); }
+        }
+
+        /* GLITCH EFFECTS */
+        #glitch-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 0, 0, 0.3);
+            background: rgba(255, 0, 0, 0.4);
             display: none;
-            z-index: 3000;
+            z-index: 6000;
             pointer-events: none;
-            overflow: hidden;
         }
 
-        .virus-text {
+        .virus-spam {
             position: absolute;
-            font-size: 100px;
             font-weight: bold;
-            animation: flash 0.1s infinite;
+            font-size: 80px;
+            white-space: nowrap;
+            animation: rainbow 0.1s infinite;
         }
 
-        @keyframes flash {
-            0% { color: red; transform: scale(1); }
-            50% { color: lime; transform: scale(1.5) rotate(10deg); }
-            100% { color: blue; transform: scale(1); }
-        }
-
-        #game-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: black;
-            display: none;
-            z-index: 1000;
+        @keyframes rainbow {
+            0% { color: red; transform: scale(1) rotate(0); }
+            25% { color: yellow; transform: scale(1.5) rotate(5deg); }
+            50% { color: lime; transform: scale(0.8) rotate(-5deg); }
+            75% { color: cyan; transform: scale(1.2) rotate(10deg); }
+            100% { color: magenta; transform: scale(1) rotate(0); }
         }
     </style>
 </head>
 <body>
 
     <h1>🎮 TRASH HUB 🎮</h1>
-    <marquee scrollamount="20">⚠️ WARNING: HIGH LEVELS OF BRAIN ROT DETECTED -- PLAY AT YOUR OWN RISK ⚠️</marquee>
+    <marquee scrollamount="25">⚠️ BRAIN ROT WARNING ⚠️ PLS DONT CLICK THE BOTTOM BUTTON ⚠️ OH GOD ⚠️</marquee>
 
     <div class="scene">
-        <div class="menu-item" id="card1" onclick="openGame('bloxorz-knockoff-made-by-ai.html')">
+        <div class="menu-item" id="card1" onclick="alert('Loading Bloxorz... maybe')">
             <h2>BLOXORZ</h2>
-            <p>Rectangle Physics</p>
+            <p>Roll the rectangle</p>
         </div>
-        <div class="menu-item" id="card2" onclick="openGame('pubg-on-crack-made-by-ai.html')">
+        <div class="menu-item" id="card2" onclick="alert('Loading PUBG... probably not')">
             <h2>PUBG ON CRACK</h2>
-            <p>Absolute Chaos</p>
+            <p>Broken physics sim</p>
         </div>
-        <div class="menu-item" id="card3" onclick="alert('EXIT DENIED')">
+        <div class="menu-item" id="card3" onclick="alert('ERROR: EXIT.EXE NOT FOUND')">
             <h2>EXIT</h2>
-            <p>No Escape</p>
+            <p>Give up now</p>
         </div>
     </div>
 
-    <button id="virus-btn" onclick="triggerVirus()">DO NOT CLICK THIS BUTTON</button>
+    <button id="virus-btn" onclick="goCrazy()">⚠️ CLICK FOR FREE ROBUX (TOTALY NOT A VIRUS) ⚠️</button>
 
-    <div id="glitch-screen"></div>
-
-    <div id="game-overlay">
-        <iframe id="game-frame"></iframe>
-    </div>
+    <div id="glitch-overlay"></div>
 
     <script>
-        const repoUrl = "https://raw.githack.com/GGVR1000/Stupid-html-shit-made-by-ai/main/";
+        function goCrazy() {
+            const overlay = document.getElementById('glitch-overlay');
+            overlay.style.display = 'block';
 
-        function openGame(file) {
-            document.getElementById('game-frame').src = repoUrl + file;
-            document.getElementById('game-overlay').style.display = 'block';
-        }
-
-        // FAKE VIRUS LOGIC
-        function triggerVirus() {
-            const glitch = document.getElementById('glitch-screen');
-            glitch.style.display = 'block';
-
-            // 1. Play Annoying Sound (Simple Beeps)
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            // 1. Annoying Audio
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
             setInterval(() => {
-                const osc = audioCtx.createOscillator();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(Math.random() * 1000 + 200, audioCtx.currentTime);
-                osc.connect(audioCtx.destination);
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = Math.random() > 0.5 ? 'sawtooth' : 'square';
+                osc.frequency.setValueAtTime(Math.random() * 2000 + 100, ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
                 osc.start();
-                osc.stop(audioCtx.currentTime + 0.1);
-            }, 150);
+                osc.stop(ctx.currentTime + 0.1);
+            }, 80);
 
-            // 2. Spam Glitch Text
+            // 2. Spam "VIRUS" everywhere
             setInterval(() => {
-                const t = document.createElement('div');
-                t.className = 'virus-text';
-                t.innerText = 'VIRUS';
-                t.style.left = Math.random() * 100 + 'vw';
-                t.style.top = Math.random() * 100 + 'vh';
-                glitch.appendChild(t);
-            }, 100);
-
-            // 3. Visual Glitch Shaking
-            setInterval(() => {
-                document.body.style.transform = `translate(${Math.random()*20-10}px, ${Math.random()*20-10}px)`;
-                document.body.style.filter = `hue-rotate(${Math.random()*360}deg) invert(${Math.random()>0.8?1:0})`;
+                const div = document.createElement('div');
+                div.className = 'virus-spam';
+                div.innerText = 'VIRUS';
+                div.style.left = Math.random() * 90 + 'vw';
+                div.style.top = Math.random() * 90 + 'vh';
+                overlay.appendChild(div);
             }, 50);
+
+            // 3. Shake and Invert Screen
+            setInterval(() => {
+                document.body.style.filter = `invert(${Math.random() > 0.5 ? 1 : 0}) hue-rotate(${Math.random() * 360}deg)`;
+                document.body.style.transform = `translate(${Math.random() * 40 - 20}px, ${Math.random() * 40 - 20}px)`;
+            }, 30);
         }
     </script>
 </body>
