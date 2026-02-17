@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloxorz Lite</title>
+    <style>
+        body {
+            margin: 0;
+            background: radial-gradient(circle, #1e1e2f, #0a0a0a);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        canvas {
+            background: #222;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            border-radius: 8px;
+            border: 2px solid #444;
+        }
+        .ui {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        h1 { margin: 0; letter-spacing: 5px; color: #00d4ff; }
+        .controls { margin-top: 15px; font-size: 0.9em; color: #888; }
+    </style>
+</head>
+<body>
+
+    <div class="ui">
+        <h1>BLOXORZ</h1>
+        <div id="status">Use Arrow Keys to Roll</div>
+    </div>
+
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+    <div class="controls">Goal: Fall vertically into the dark hole.</div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const status = document.getElementById('status');
+
+        // Game Constants
+        const TILE_SIZE = 40;
+        const OFFSET_X = 200;
+        const OFFSET_Y = 150;
+
+        // Level Map (1 = tile, 0 = empty, 2 = hole)
+        const map = [
+            [1, 1, 1, 0, 0, 0],
+            [1, 1, 1, 1, 1, 0],
+            [1, 1, 1, 1, 1, 1],
+            [0, 1, 1, 2, 1, 1],
+            [0, 0, 1, 1, 1, 0]
+        ];
+
+        // Block State
+        let block = {
+            x: 0, y: 0, // Top-left tile coordinate
+            state: 'standing' // 'standing', 'horizontal', 'vertical'
+        };
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Map
+            for (let r = 0; r < map.length; r++) {
+                for (let c = 0; c < map[r].length; c++) {
+                    if (map[r][c] === 0) continue;
+                    
+                    let x = OFFSET_X + c * TILE_SIZE;
+                    let y = OFFSET_Y + r * TILE_SIZE;
+
+                    if (map[r][c] === 1) {
+                        ctx.fillStyle = '#444';
+                        ctx.fillRect(x, y, TILE_SIZE - 2, TILE_SIZE - 2);
+                        ctx.strokeStyle = '#666';
+                        ctx.strokeRect(x, y, TILE_SIZE - 2, TILE_SIZE - 2);
+                    } else if (map[r][c] === 2) {
+                        ctx.fillStyle = '#000';
+                        ctx.fillRect(x, y, TILE_SIZE - 2, TILE_SIZE - 2);
+                    }
+                }
+            }
+
+            // Draw Block
+            ctx.fillStyle = '#ff9f43';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#ff9f43';
+            
+            let bx = OFFSET_X + block.x * TILE_SIZE;
+            let by = OFFSET_Y + block.y * TILE_SIZE;
+
+            if (block.state === 'standing') {
+                ctx.fillRect(bx + 4, by + 4, TILE_SIZE - 10, TILE_SIZE - 10);
+            } else if (block.state === 'horizontal') {
+                ctx.fillRect(bx + 4, by + 4, (TILE_SIZE * 2) - 10, TILE_SIZE - 10);
+            } else if (block.state === 'vertical') {
+                ctx.fillRect(bx + 4, by + 4, TILE_SIZE - 10, (TILE_SIZE * 2) - 10);
+            }
+            
+            ctx.shadowBlur = 0;
+        }
+
+        function move(dir) {
+            let nx = block.x;
+            let ny = block.y;
+            let ns = block.state;
+
+            if (dir === 'ArrowUp') {
+                if (ns === 'standing') { nx = block.x; ny = block.y - 2; ns = 'vertical'; }
+                else if (ns === 'vertical') { nx = block.x; ny = block.y - 1; ns = 'standing'; }
+                else if (ns === 'horizontal') { nx = block.x; ny = block.y - 1; ns = 'horizontal'; }
+            } else if (dir === 'ArrowDown') {
+                if (ns === 'standing') { nx = block.x; ny = block.y + 1; ns = 'vertical'; }
+                else if (ns === 'vertical') { nx = block.x; ny = block.y + 2; ns = 'standing'; }
+                else if (ns === 'horizontal') { nx = block.x; ny = block.y + 1; ns = 'horizontal'; }
+            } else if (dir === 'ArrowLeft') {
+                if (ns === 'standing') { nx = block.x - 2; ny = block.y; ns = 'horizontal'; }
+                else if (ns === 'horizontal') { nx = block.x - 1; ny = block.y; ns = 'standing'; }
+                else if (ns === 'vertical') { nx = block.x - 1; ny = block.y; ns = 'vertical'; }
+            } else if (dir === 'ArrowRight') {
+                if (ns === 'standing') { nx = block.x + 1; ny = block.y; ns = 'horizontal'; }
+                else if (ns === 'horizontal') { nx = block.x + 2; ny = block.y; ns = 'standing'; }
+                else if (ns === 'vertical') { nx = block.x + 1; ny = block.y; ns = 'vertical'; }
+            }
+
+            checkLogic(nx, ny, ns);
+        }
+
+        function checkLogic(nx, ny, ns) {
+            // Check if out of bounds or on empty space
+            const isTile = (x, y) => map[y] && map[y][x] !== 0;
+            const isHole = (x, y) => map[y] && map[y][x] === 2;
+
+            let lose = false;
+            let win = false;
+
+            if (ns === 'standing') {
+                if (!isTile(nx, ny)) lose = true;
+                if (isHole(nx, ny)) win = true;
+            } else if (ns === 'horizontal') {
+                if (!isTile(nx, ny) || !isTile(nx + 1, ny)) lose = true;
+            } else if (ns === 'vertical') {
+                if (!isTile(nx, ny) || !isTile(nx, ny + 1)) lose = true;
+            }
+
+            if (win) {
+                status.innerText = "YOU WIN! 🎉";
+                status.style.color = "#00ff00";
+                block.x = nx; block.y = ny; block.state = ns;
+            } else if (lose) {
+                status.innerText = "FELL OFF! Try Again.";
+                status.style.color = "#ff4d4d";
+                reset();
+            } else {
+                block.x = nx; block.y = ny; block.state = ns;
+                status.innerText = "Keep Rolling...";
+                status.style.color = "white";
+            }
+            draw();
+        }
+
+        function reset() {
+            block = { x: 0, y: 0, state: 'standing' };
+        }
+
+        window.addEventListener('keydown', e => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+                move(e.key);
+            }
+        });
+
+        // Initial Draw
+        draw();
+    </script>
+</body>
+</html>
