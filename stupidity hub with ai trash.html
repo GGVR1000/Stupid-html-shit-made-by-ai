@@ -115,7 +115,7 @@
         </div>
         <div class="menu-item" id="card2" onclick="launchGame('pubg')">
             <h2 style="margin:0">PUBG ON CRACK</h2>
-            <p>Totally Balanced Gameplay</p>
+            <p>100% Chaos Guaranteed</p>
         </div>
         <div class="menu-item" id="card3" onclick="alert('ERROR: Your mouse is too high quality to exit.')">
             <h2 style="margin:0">EXIT</h2>
@@ -140,20 +140,74 @@
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('main-menu').style.display = 'block';
             }
-        }, 30); // Sped up slightly for testing
+        }, 50);
 
-        // GAME DATA INLINED AS STRINGS
+        // FULL GAME CODE STRINGS (NO EXTERNAL LINKS)
         const games = {
-            bloxorz: `<html><body style="background:#1e1e2f;color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;"><h2>BLOXORZ LITE</h2><canvas id="g" width="600" height="400" style="background:#222;border:2px solid #444;"></canvas><p>Use Arrows to Roll</p><script>const c=document.getElementById("g").getContext("2d");let b={x:0,y:0,s:"standing"};const m=[[1,1,1,0,0,0],[1,1,1,1,1,0],[1,1,1,1,1,1],[0,1,1,2,1,1],[0,0,1,1,1,0]];function d(){c.clearRect(0,0,600,400);for(let r=0;r<m.length;r++)for(let l=0;l<m[r].length;l++){if(m[r][l]==0)continue;c.fillStyle=m[r][l]==1?"#444":"#000";c.fillRect(200+l*40,150+r*40,38,38)}c.fillStyle="#ff9f43";let x=200+b.x*40,y=150+b.y*40;if(b.s=="standing")c.fillRect(x+4,y+4,32,32);else if(b.s=="horiz")c.fillRect(x+4,y+4,72,32);else c.fillRect(x+4,y+4,32,72)}window.onkeydown=e=>{if(e.key=="ArrowUp"){if(b.s=="standing"){b.y-=2;b.s="vert"}else if(b.s=="vert"){b.y-=1;b.s="standing"}else b.y-=1}if(e.key=="ArrowDown"){if(b.s=="standing"){b.y+=1;b.s="vert"}else if(b.s=="vert"){b.y+=2;b.s="standing"}else b.y+=1}if(e.key=="ArrowLeft"){if(b.s=="standing"){b.x-=2;b.s="horiz"}else if(b.s=="horiz"){b.x-=1;b.s="standing"}else b.x-=1}if(e.key=="ArrowRight"){if(b.s=="standing"){b.x+=1;b.s="horiz"}else if(b.s=="horiz"){b.x+=2;b.s="standing"}else b.x+=1}d()};d();<\/script></body></html>`,
+            bloxorz: `
+                <html><body style="background:#111;color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;">
+                <h2>STUPID BLOXORZ</h2>
+                <canvas id="g" width="600" height="400" style="background:#222;border:2px solid #444;"></canvas>
+                <script>
+                    const c=document.getElementById("g").getContext("2d");
+                    let b={x:0,y:0,s:"standing"};
+                    const m=[[1,1,1,0,0,0],[1,1,1,1,1,0],[1,1,1,1,1,1],[0,1,1,2,1,1],[0,0,1,1,1,0]];
+                    function d(){
+                        c.clearRect(0,0,600,400);
+                        for(let r=0;r<m.length;r++)for(let l=0;l<m[r].length;l++){
+                            if(m[r][l]==0)continue;
+                            c.fillStyle=m[r][l]==1?"#444":m[r][l]==2?"#000":"#444";
+                            c.fillRect(200+l*40,150+r*40,38,38);
+                        }
+                        c.fillStyle="#ff9f43";
+                        let x=200+b.x*40,y=150+b.y*40;
+                        if(b.s=="standing")c.fillRect(x+4,y+4,32,32);
+                        else if(b.s=="horiz")c.fillRect(x+4,y+4,72,32);
+                        else c.fillRect(x+4,y+4,32,72);
+                    }
+                    window.onkeydown=e=>{
+                        if(e.key=="ArrowUp"){if(b.s=="standing"){b.y-=2;b.s="vert"}else if(b.s=="vert"){b.y-=1;b.s="standing"}else b.y-=1}
+                        if(e.key=="ArrowDown"){if(b.s=="standing"){b.y+=1;b.s="vert"}else if(b.s=="vert"){b.y+=2;b.s="standing"}else b.y+=1}
+                        if(e.key=="ArrowLeft"){if(b.s=="standing"){b.x-=2;b.s="horiz"}else if(b.s=="horiz"){b.x-=1;b.s="standing"}else b.x-=1}
+                        if(e.key=="ArrowRight"){if(b.s=="standing"){b.x+=1;b.s="horiz"}else if(b.s=="horiz"){b.x+=2;b.s="standing"}else b.x+=1}
+                        d();
+                    };
+                    d();
+                <\/script></body></html>`,
             
-            pubg: `<html><body style="margin:0;background:#1a1a1a;color:white;overflow:hidden;font-family:monospace;display:flex;justify-content:center;align-items:center;height:100vh;"><canvas id="g" width="800" height="600" style="background:#2d3436;border:2px solid #636e72;"></canvas><script>const c=document.getElementById("g").getContext("2d");let p={x:400,y:300,hp:100},en=[];function s(){if(en.length<5)en.push({x:Math.random()*800,y:Math.random()*600})}function u(){const a=Math.random()*2*Math.PI;en.forEach(e=>{e.x+=(p.x-e.x)*0.01;e.y+=(p.y-e.y)*0.01})}function draw(){c.clearRect(0,0,800,600);c.fillStyle="cyan";c.beginPath();c.arc(p.x,p.y,15,0,7);c.fill();c.fillStyle="red";en.forEach(e=>{c.beginPath();c.arc(e.x,e.y,15,0,7);c.fill()});requestAnimationFrame(()=>{u();draw()})}setInterval(s,2000);draw();<\/script></body></html>`
+            pubg: `
+                <html><body style="margin:0;background:#1a1a1a;color:white;overflow:hidden;font-family:monospace;display:flex;justify-content:center;align-items:center;height:100vh;">
+                <canvas id="g" width="800" height="600" style="background:#2d3436;border:2px solid #636e72;"></canvas>
+                <script>
+                    const c=document.getElementById("g").getContext("2d");
+                    let p={x:400,y:300},en=[],bul=[];
+                    window.onclick=e=>{
+                        const a=Math.atan2(e.clientY-p.y,e.clientX-p.x);
+                        bul.push({x:p.x,y:p.y,vx:Math.cos(a)*10,vy:Math.sin(a)*10});
+                    };
+                    function s(){if(en.length<10)en.push({x:Math.random()*800,y:Math.random()*600})}
+                    function draw(){
+                        c.clearRect(0,0,800,600);
+                        c.fillStyle="cyan";c.beginPath();c.arc(p.x,p.y,15,0,7);c.fill();
+                        c.fillStyle="red";en.forEach(e=>{
+                            e.x+=(p.x-e.x)*0.02;e.y+=(p.y-e.y)*0.02;
+                            c.beginPath();c.arc(e.x,e.y,15,0,7);c.fill();
+                        });
+                        c.fillStyle="yellow";bul.forEach((b,i)=>{
+                            b.x+=b.vx;b.y+=b.vy;
+                            c.fillRect(b.x,b.y,5,5);
+                            en.forEach((e,ei)=>{if(Math.hypot(e.x-b.x,e.y-b.y)<15)en.splice(ei,1)});
+                        });
+                        requestAnimationFrame(draw);
+                    }
+                    setInterval(s,1000);draw();
+                <\/script></body></html>`
         };
 
         function launchGame(id) {
             const frame = document.getElementById('game-frame');
             document.getElementById('game-container').style.display = 'block';
             
-            // Inject the string as a real HTML document inside the iframe
             const doc = frame.contentWindow.document;
             doc.open();
             doc.write(games[id]);
