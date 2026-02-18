@@ -77,13 +77,15 @@
 
     <div id="jumpscare">
         <img id="scare-image" class="jumpscare-img" src="" alt="">
-        <audio id="scare-audio" src=""></audio>
     </div>
+    
+    <audio id="scare-audio" preload="auto"></audio>
 
     <script>
         // --- CONFIGURATION ---
-        const JUMPSCARE_IMAGE = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjCXJkc2qJ-r_zCk3TgEHCAWxZP4grZDWyTWkUyrPAnrAJp_gN:https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/805d3cf6-7d6e-49e8-94eb-7308079bc696/dhue8bn-6dae10ed-cbe8-4066-b34f-28d942f69a54.png/v1/fill/w_920,h_598/creepy_eye_png_by_solarmaker2005_dhue8bn-fullview.png%3Ftoken%3DeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NTk4IiwicGF0aCI6Ii9mLzgwNWQzY2Y2LTdkNmUtNDllOC05NGViLTczMDgwNzliYzY5Ni9kaHVlOGJuLTZkYWUxMGVkLWNiZTgtNDA2Ni1iMzRmLTI4ZDk0MmY2OWE1NC5wbmciLCJ3aWR0aCI6Ijw9OTIwIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.bsOk63azFOKbO8sqSJYQ5_DIXesqlNyqicxqzu98OeQ&s"; 
-        const JUMPSCARE_AUDIO = "https://github.com/GGVR1000/random-scream-sound-effect/blob/main/u_503t47r0fo-distant-demonic-scream-and-debris-346596.mp3";
+        const JUMPSCARE_IMAGE = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjCXJkc2qJ-r_zCk3TgEHCAWxZP4grZDWyTWkUyrPAnrAJp_gN"; 
+        // Added ?raw=true so the browser can play the file directly from GitHub
+        const JUMPSCARE_AUDIO = "https://github.com/GGVR1000/random-scream-sound-effect/blob/main/u_503t47r0fo-distant-demonic-scream-and-debris-346596.mp3?raw=true";
         // ---------------------
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -95,9 +97,11 @@
             document.getElementById('robux-btn').style.display = "none";
             document.getElementById('glitch-overlay').style.display = 'block';
             
-            // Set assets
+            // Set assets immediately
             document.getElementById('scare-image').src = JUMPSCARE_IMAGE;
-            document.getElementById('scare-audio').src = JUMPSCARE_AUDIO;
+            const audio = document.getElementById('scare-audio');
+            audio.src = JUMPSCARE_AUDIO;
+            audio.load(); // Force the browser to start downloading the scream early
 
             // Glitch Sounds (Synthetic)
             const chaosSounds = setInterval(() => {
@@ -133,6 +137,9 @@
                 document.body.style.filter = "none";
                 document.getElementById('glitch-overlay').style.display = "none";
                 document.getElementById('rsod').style.display = 'block';
+                
+                // --- SOUND PLAYS NOW (When Red Screen appears) ---
+                audio.play();
 
                 const face = document.getElementById('face');
                 
@@ -142,17 +149,16 @@
                         face.innerText = ">:)";
                         face.style.opacity = 1;
                         
-                        // Jumpscare 0.7s later
+                        // Jumpscare 0.7s after face turns evil
                         setTimeout(() => {
                             document.getElementById('jumpscare').style.display = 'flex';
-                            document.getElementById('scare-audio').play();
 
-                            // Final Blackout
+                            // Final Blackout after 3 seconds
                             setTimeout(() => {
                                 document.getElementById('jumpscare').style.background = "black";
                                 document.getElementById('jumpscare').innerHTML = "";
                                 audioCtx.close();
-                            }, 2000); // Adjust based on scream length
+                            }, 3000); 
                         }, 700);
                     }, 300);
                 }, 2000);
