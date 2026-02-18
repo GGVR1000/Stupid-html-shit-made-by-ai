@@ -14,7 +14,6 @@
         h1 { font-size: 50px; color: #ff0000; animation: jitter 0.05s infinite; }
         @keyframes jitter { 0% { transform: translate(3px, 3px); } 50% { transform: translate(-3px, -3px); } }
 
-        /* THE VIBRATING BAIT */
         #robux-btn {
             position: fixed; bottom: 0; width: 100%; height: 150px;
             background: #ff0000; color: white; font-size: 50px; font-weight: 900;
@@ -33,23 +32,22 @@
             pointer-events: none;
         }
 
-        .virus-text {
-            position: absolute; font-size: 120px; font-weight: bold;
-            animation: strobe 0.1s infinite;
-        }
-        @keyframes strobe {
-            0% { color: red; transform: scale(1.5) rotate(15deg); }
-            50% { color: #0f0; transform: scale(0.5) rotate(-15deg); }
-            100% { color: blue; transform: scale(2) rotate(0deg); }
+        /* RED SCREEN OF DEATH */
+        #rsod {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #b00000; color: white; display: none;
+            z-index: 11000; padding: 10%; font-family: 'Segoe UI', sans-serif;
         }
 
-        /* FAKE BSOD */
-        #bsod {
+        #face { font-size: 100px; transition: opacity 0.5s; }
+
+        /* JUMPSCARE OVERLAY */
+        #jumpscare {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0078d7; color: white; display: none;
-            z-index: 11000; padding: 10%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: black; display: none; z-index: 12000;
+            justify-content: center; align-items: center;
         }
-        .qr-code { width: 100px; height: 100px; background: white; margin-top: 20px; }
+        .creepy-eyes { width: 600px; filter: contrast(1.5) brightness(0.8); }
     </style>
 </head>
 <body>
@@ -61,91 +59,82 @@
 
     <div id="glitch-overlay"></div>
 
-    <div id="bsod">
-        <div style="font-size: 100px;">:(</div>
-        <h2>Your PC ran into a problem and needs to restart.</h2>
+    <div id="rsod">
+        <div id="face">:(</div>
+        <h2>Your Computer Is Destroyed And Will Never Be Fixed You Idiot! Never Trust Free Robux...</h2>
         <p>We're just collecting some error info, and then we'll restart for you.</p>
         <p>100% Complete</p>
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <div class="qr-code"></div>
-            <div style="font-size: 12px;">
-                For more information about this issue and possible fixes, visit https://www.windows.com/stopcode<br><br>
-                If you call a support person, give them this info:<br>
-                Stop code: CRITICAL_PROCESS_DIED_FROM_STUPIDITY
-            </div>
-        </div>
+    </div>
+
+    <div id="jumpscare">
+        <img src="https://i.imgur.com/GfVp8YF.png" class="creepy-eyes">
     </div>
 
     <script>
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        function playLaugh() {
-            // Demonic synthesized laugh
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sawtooth';
-                    // Pitches down as it goes
-                    osc.frequency.setValueAtTime(200 - (i * 30), audioCtx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.5);
-                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.5);
-                }, i * 400);
-            }
-        }
-
         function triggerChaos() {
-            // 1. FORCE FULLSCREEN
+            // Force Fullscreen
             const elem = document.documentElement;
             if (elem.requestFullscreen) { elem.requestFullscreen(); }
             else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
 
             document.getElementById('glitch-overlay').style.display = 'block';
 
-            // 2. AGGRESSIVE SOUNDS
-            setInterval(() => {
+            // Chaotic Sounds
+            const chaosInterval = setInterval(() => {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-                osc.type = Math.random() > 0.5 ? 'sawtooth' : 'square';
+                osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(Math.random() * 6000 + 100, audioCtx.currentTime);
                 gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.05);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.05);
             }, 60);
 
-            // 3. VIRUS SPAM
-            setInterval(() => {
-                const div = document.createElement('div');
-                div.className = 'virus-text';
-                div.innerText = 'VIRUS';
-                div.style.left = Math.random() * 80 + 'vw';
-                div.style.top = Math.random() * 80 + 'vh';
-                document.getElementById('glitch-overlay').appendChild(div);
-            }, 50);
-
-            // 4. SCREEN MELTDOWN
-            setInterval(() => {
+            // Screen Meltdown
+            const filterInterval = setInterval(() => {
                 document.body.style.filter = `invert(${Math.random() > 0.8 ? 1 : 0}) hue-rotate(${Math.random() * 360}deg)`;
-                window.scrollBy(Math.random() * 40 - 20, Math.random() * 40 - 20);
             }, 30);
 
-            // 5. THE END: LAUGH AND BSOD
+            // Sequence Start
             setTimeout(() => {
-                playLaugh();
+                // Remove glitch effects and show Red Screen
+                clearInterval(filterInterval);
+                document.body.style.filter = "none";
+                document.getElementById('glitch-overlay').style.display = "none";
+                document.getElementById('rsod').style.display = 'block';
+
+                // Fade face from :( to >:)
+                const faceDiv = document.getElementById('face');
                 setTimeout(() => {
-                    document.getElementById('bsod').style.display = 'block';
-                    // Kill the noisy loops
-                    let id = window.setInterval(function() {}, 0);
-                    while (id--) { window.clearInterval(id); }
+                    faceDiv.style.opacity = 0;
+                    setTimeout(() => {
+                        faceDiv.innerText = ">:)";
+                        faceDiv.style.opacity = 1;
+                        
+                        // Wait 0.7s after face change for jumpscare
+                        setTimeout(() => {
+                            clearInterval(chaosInterval);
+                            document.getElementById('jumpscare').style.display = 'flex';
+                            
+                            // Screech sound
+                            const scream = audioCtx.createOscillator();
+                            scream.type = 'sawtooth';
+                            scream.frequency.setValueAtTime(100, audioCtx.currentTime);
+                            scream.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 1.5);
+                            scream.connect(audioCtx.destination);
+                            scream.start(); scream.stop(audioCtx.currentTime + 1.5);
+
+                            // Go black after jumpscare
+                            setTimeout(() => {
+                                document.getElementById('jumpscare').innerHTML = "";
+                                audioCtx.close();
+                            }, 1500);
+                        }, 700);
+                    }, 500);
                 }, 2000);
-            }, 28000);
+            }, 20000); // Trigger after 20 seconds of chaos
         }
     </script>
 </body>
