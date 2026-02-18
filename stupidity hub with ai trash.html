@@ -31,14 +31,15 @@
             pointer-events: none;
         }
 
-        .virus-text {
-            position: absolute; font-size: 120px; font-weight: bold;
+        /* VIRUS IMAGE STYLE */
+        .virus-img {
+            position: absolute; width: 150px; height: auto;
             animation: strobe 0.1s infinite; z-index: 10001;
         }
         @keyframes strobe {
-            0% { color: red; transform: scale(1.1); }
-            50% { color: #0f0; transform: scale(1.3); }
-            100% { color: blue; transform: scale(1.1); }
+            0% { transform: scale(1) rotate(0deg); filter: hue-rotate(0deg); }
+            50% { transform: scale(1.5) rotate(10deg); filter: hue-rotate(180deg); }
+            100% { transform: scale(1) rotate(0deg); filter: hue-rotate(360deg); }
         }
 
         #rsod {
@@ -55,10 +56,8 @@
             justify-content: center; align-items: center;
         }
 
-        .eye-img {
-            width: 90%;
-            max-width: 1000px;
-            filter: brightness(0.7) contrast(1.5);
+        .jumpscare-img {
+            width: 100vw; height: 100vh; object-fit: contain;
         }
     </style>
 </head>
@@ -78,10 +77,14 @@
     </div>
 
     <div id="jumpscare">
-        <img class="eye-img" src="https://i.ibb.co/p6Vp8YF/creepy-eyes.png" alt="eyes">
+        <img id="scare-image" class="jumpscare-img" src="" alt="">
     </div>
 
     <script>
+        // --- PUT YOUR IMAGE LINK HERE ---
+        const JUMPSCARE_IMAGE = "PASTE_YOUR_LINK_HERE"; 
+        // --------------------------------
+
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         function triggerChaos() {
@@ -90,8 +93,9 @@
             
             document.getElementById('robux-btn').style.display = "none";
             document.getElementById('glitch-overlay').style.display = 'block';
+            document.getElementById('scare-image').src = JUMPSCARE_IMAGE;
 
-            // High-pitched glitch sounds
+            // Chaotic Noises
             const chaosSounds = setInterval(() => {
                 const osc = audioCtx.createOscillator();
                 osc.type = 'sawtooth';
@@ -102,25 +106,24 @@
                 osc.start(); osc.stop(audioCtx.currentTime + 0.05);
             }, 60);
 
-            // Spamming Virus text
-            const textSpam = setInterval(() => {
-                const div = document.createElement('div');
-                div.className = 'virus-text';
-                div.innerText = 'VIRUS';
-                div.style.left = Math.random() * 80 + 'vw';
-                div.style.top = Math.random() * 80 + 'vh';
-                document.getElementById('glitch-overlay').appendChild(div);
-            }, 100);
+            // Spamming the Eyes as the "Virus"
+            const imgSpam = setInterval(() => {
+                const img = document.createElement('img');
+                img.className = 'virus-img';
+                img.src = JUMPSCARE_IMAGE;
+                img.style.left = Math.random() * 80 + 'vw';
+                img.style.top = Math.random() * 80 + 'vh';
+                document.getElementById('glitch-overlay').appendChild(img);
+            }, 150);
 
-            // Screen flashing/shifting
             const filterShift = setInterval(() => {
                 document.body.style.filter = `invert(${Math.random() > 0.8 ? 1 : 0}) hue-rotate(${Math.random() * 360}deg)`;
             }, 40);
 
-            // Transition to Red Screen
+            // Transition to RSOD
             setTimeout(() => {
                 clearInterval(chaosSounds);
-                clearInterval(textSpam);
+                clearInterval(imgSpam);
                 clearInterval(filterShift);
                 
                 document.body.style.filter = "none";
@@ -129,35 +132,32 @@
 
                 const face = document.getElementById('face');
                 
-                // Switch face to >:)
                 setTimeout(() => {
                     face.style.opacity = 0;
                     setTimeout(() => {
                         face.innerText = ">:)";
                         face.style.opacity = 1;
                         
-                        // Wait 0.7s then Jumpscare
+                        // Jumpscare 0.7s later
                         setTimeout(() => {
                             document.getElementById('jumpscare').style.display = 'flex';
                             
-                            // Jumpscare sound
                             const scream = audioCtx.createOscillator();
                             scream.type = 'square';
-                            scream.frequency.setValueAtTime(1000, audioCtx.currentTime);
-                            scream.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 1.5);
+                            scream.frequency.setValueAtTime(900, audioCtx.currentTime);
+                            scream.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 1.2);
                             scream.connect(audioCtx.destination);
-                            scream.start(); scream.stop(audioCtx.currentTime + 1.5);
+                            scream.start(); scream.stop(audioCtx.currentTime + 1.2);
 
-                            // Final blackout
                             setTimeout(() => {
                                 document.getElementById('jumpscare').style.background = "black";
                                 document.getElementById('jumpscare').innerHTML = "";
                                 audioCtx.close();
-                            }, 1500);
+                            }, 1200);
                         }, 700);
                     }, 300);
                 }, 2000);
-            }, 15000); // 15 seconds of chaos
+            }, 12000); 
         }
     </script>
 </body>
